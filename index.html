@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نموذج تسجيل بيانات الطلاب والمتدربين</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --burgundy:#6B2737; --burgundy-dark:#4A1B26; --burgundy-darker:#34131C;
+    --beige:#F3EAD8; --beige-light:#FBF6EC; --beige-card:#FFFDF8;
+    --gold:#B08D57; --gold-light:#D9BE8F;
+    --text-dark:#2C1219; --text-muted:#8A6F63;
+    --danger:#A3372F; --success:#3F6B3A;
+    --border-soft:#E4D7BE;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--beige);font-family:'Tajawal',sans-serif;color:var(--text-dark);padding:0 0 4rem;}
+
+  .header{background:linear-gradient(135deg,var(--burgundy) 0%,var(--burgundy-dark) 100%);color:var(--beige-light);padding:2.25rem 1.5rem 5rem;position:relative;overflow:hidden;text-align:center;}
+  .header::before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,rgba(217,190,143,0.06) 0 2px,transparent 2px 22px);}
+  .header-inner{position:relative;z-index:1;max-width:800px;margin:0 auto;}
+  .logo-box{width:64px;height:64px;border-radius:50%;background:rgba(251,246,236,0.1);border:1.5px solid rgba(217,190,143,0.55);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:'Cairo',sans-serif;font-weight:700;color:var(--gold-light);font-size:12px;cursor:pointer;position:relative;}
+  .logo-box img{width:100%;height:100%;object-fit:cover;}
+  .logo-box input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+  .eyebrow{display:inline-block;font-family:'Cairo',sans-serif;font-size:12px;letter-spacing:1px;color:var(--gold-light);border:1px solid rgba(217,190,143,0.5);border-radius:999px;padding:5px 16px;margin-bottom:14px;}
+  h1{font-family:'Cairo',sans-serif;font-weight:800;font-size:27px;margin:0 0 6px;}
+  .header p.sub{font-size:14px;color:rgba(251,246,236,0.8);margin:0;}
+  .org-line{margin-top:16px;font-size:13px;color:var(--gold-light);}
+  .settings-toggle{margin-top:16px;background:transparent;border:1px solid rgba(217,190,143,0.5);color:var(--beige-light);font-family:'Tajawal',sans-serif;font-size:12px;padding:6px 16px;border-radius:999px;cursor:pointer;}
+  .settings-toggle:hover{background:rgba(251,246,236,0.08);}
+
+  .wrap{max-width:960px;margin:-3rem auto 0;padding:0 1.25rem;position:relative;z-index:2;}
+
+  .settings-panel{display:none;}
+  .settings-panel.open{display:block;}
+
+  .card{background:var(--beige-card);border:1px solid var(--border-soft);border-radius:16px;box-shadow:0 12px 30px rgba(74,27,38,0.12);padding:1.75rem;margin-bottom:1.5rem;}
+  .card-title{font-family:'Cairo',sans-serif;font-weight:700;font-size:17px;color:var(--burgundy);margin:0 0 4px;display:flex;align-items:center;gap:8px;}
+  .card-title .num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--burgundy);color:var(--beige-light);font-size:12px;}
+  .section-sub{font-size:13px;color:var(--text-muted);margin:0 0 18px;}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field.full{grid-column:1 / -1;}
+  label{font-size:13px;font-weight:500;color:var(--text-dark);}
+  label .req{color:var(--danger);margin-left:2px;}
+  input,select,textarea{font-family:'Tajawal',sans-serif;font-size:14px;padding:10px 12px;border:1px solid var(--border-soft);border-radius:8px;background:#fff;color:var(--text-dark);outline:none;width:100%;}
+  input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(176,141,87,0.18);}
+  textarea{resize:vertical;min-height:64px;}
+
+  .actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;flex-wrap:wrap;}
+  button.btn{font-family:'Cairo',sans-serif;font-weight:700;font-size:14px;padding:11px 26px;border-radius:8px;border:none;cursor:pointer;}
+  .btn-primary{background:var(--burgundy);color:var(--beige-light);}
+  .btn-primary:hover{background:var(--burgundy-dark);}
+  .btn-ghost{background:transparent;color:var(--burgundy);border:1px solid var(--burgundy);}
+  .btn-ghost:hover{background:rgba(107,39,55,0.06);}
+  .btn-small{padding:6px 14px;font-size:12px;}
+
+  .edit-banner{display:none;align-items:center;justify-content:space-between;background:var(--gold-light);color:var(--burgundy-darker);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:500;margin-bottom:16px;}
+  .edit-banner.show{display:flex;}
+  .edit-banner button{background:transparent;border:1px solid var(--burgundy-darker);color:var(--burgundy-darker);border-radius:6px;padding:3px 12px;font-size:12px;cursor:pointer;}
+
+  .msg{font-size:13px;margin-top:10px;text-align:left;}
+  .msg.ok{color:var(--success);}
+  .msg.err{color:var(--danger);}
+
+  .report-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
+  .stat-pill{background:var(--burgundy);color:var(--beige-light);font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;padding:6px 14px;border-radius:999px;}
+  .search-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+  .search-row input{flex:1;min-width:180px;}
+
+  .table-wrap{overflow-x:auto;border:1px solid var(--border-soft);border-radius:12px;}
+  table{border-collapse:collapse;width:100%;min-width:1000px;font-size:13px;}
+  thead th{background:var(--beige);color:var(--burgundy-dark);font-family:'Cairo',sans-serif;font-weight:700;text-align:right;padding:10px 12px;border-bottom:2px solid var(--gold-light);white-space:nowrap;}
+  tbody td{padding:9px 12px;border-bottom:1px solid var(--border-soft);color:var(--text-dark);white-space:nowrap;}
+  tbody tr:hover{background:rgba(176,141,87,0.06);}
+  .seq-badge{display:inline-flex;align-items:center;justify-content:center;font-family:'Cairo',sans-serif;font-weight:700;font-size:11px;background:var(--gold-light);color:var(--burgundy-darker);border-radius:6px;padding:3px 8px;white-space:nowrap;}
+  .row-actions{display:flex;gap:6px;}
+  .icon-btn{background:transparent;border:1px solid var(--border-soft);border-radius:6px;padding:4px 10px;font-size:11px;font-family:'Tajawal',sans-serif;cursor:pointer;}
+  .icon-btn.edit{color:var(--burgundy);border-color:var(--burgundy);}
+  .icon-btn.edit:hover{background:rgba(107,39,55,0.06);}
+  .icon-btn.del{color:var(--danger);border-color:var(--danger);}
+  .icon-btn.del:hover{background:rgba(163,55,47,0.08);}
+  .empty-state{text-align:center;padding:2rem;color:var(--text-muted);font-size:13px;}
+  .note{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.7;}
+
+  .settings-grid{display:grid;grid-template-columns:auto 1fr 1fr;gap:14px;align-items:end;}
+  .settings-logo{width:72px;height:72px;border-radius:12px;background:var(--beige);border:1.5px dashed var(--border-soft);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;font-size:11px;color:var(--text-muted);text-align:center;cursor:pointer;}
+  .settings-logo img{width:100%;height:100%;object-fit:cover;}
+  .settings-logo input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+
+  @media (max-width:640px){
+    .grid{grid-template-columns:1fr;}
+    .settings-grid{grid-template-columns:1fr;}
+    h1{font-size:21px;}
+  }
+
+  @media print{
+    .header, .card:not(.print-card), .settings-toggle, .search-row, .row-actions, .actions, .edit-banner{display:none !important;}
+    body{background:#fff;padding:0;}
+    .wrap{margin:0;max-width:100%;}
+    .print-card{box-shadow:none;border:1px solid #ccc;}
+    table{min-width:100%;font-size:11px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <label class="logo-box" id="logoBoxHeader" title="إضافة شعار">
+      <span id="logoPlaceholderHeader">شعار</span>
+      <input type="file" id="logoInputHeader" accept="photo/*">
+    </label>
+    <span class="eyebrow">سجل التدريب والتوظيف</span>
+    <h1>نموذج تسجيل بيانات الطلاب والمتدربين</h1>
+    <p class="sub">شركة البرلسي للتطوير العقاري |01062782705</p>
+    <div class="org-line" id="orgLine"></div>
+    <!-- <button class="settings-toggle" type="button" onclick="toggleSettings()">تعديل بيانات الشركة والشعار</button> -->
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="card settings-panel" id="settingsPanel">
+    <p class="card-title"><span class="num">i</span> بيانات الشركة (تظهر أعلى النموذج والتقرير)</p>
+    <p class="section-sub">هذه البيانات قابلة للتعديل في أي وقت وتُحفظ تلقائيًا لكل من يستخدم النموذج</p>
+    <div class="settings-grid">
+      <label class="settings-logo" id="logoBoxSettings">
+        <span id="logoPlaceholderSettings">اضغط لرفع شعار الشركة</span>
+        <input type="file" id="logoInputSettings" accept="image/*">
+      </label>
+      <div class="field">
+        <label>اسم الشركة</label>
+        <input id="s_orgName" type="text" placeholder="مثال: شركة النور للصناعات">
+      </div>
+      <div class="field">
+        <label>رقم هاتف الشركة</label>
+        <input id="s_orgPhone" type="text" placeholder="مثال: 02xxxxxxxx">
+      </div>
+    </div>
+    <div class="field full" style="margin-top:14px;">
+      <label>عنوان الشركة</label>
+      <input id="s_orgAddress" type="text" placeholder="مثال: القاهرة، مصر">
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" type="button" onclick="saveOrgSettings()">حفظ بيانات الشركة</button>
+    </div>
+    <div id="orgMsg" class="msg"></div>
+  </div>
+
+  <div class="card">
+    <div class="edit-banner" id="editBanner">
+      <span>وضع التعديل: أنت تعدّل على سجل موجود بالفعل</span>
+      <button type="button" onclick="cancelEdit()">إلغاء والعودة لإضافة جديد</button>
+    </div>
+
+    <p class="card-title"><span class="num">1</span> البيانات الشخصية والأكاديمية</p>
+    <p class="section-sub">برجاء تعبئة جميع الحقول المطلوبة بدقة</p>
+
+    <div class="grid">
+      <div class="field"><label>الاسم الكامل<span class="req">*</span></label><input id="f_name" type="text" placeholder="مثال: أحمد محمد علي"></div>
+      <div class="field"><label>الرقم القومي<span class="req">*</span></label><input id="f_nid" type="text" inputmode="numeric" placeholder="14 رقم"></div>
+      <div class="field"><label>تاريخ الميلاد</label><input id="f_dob" type="date"></div>
+      <div class="field"><label>رقم الهاتف<span class="req">*</span></label><input id="f_phone" type="tel" placeholder="01xxxxxxxxx"></div>
+      <div class="field full"><label>البريد الإلكتروني</label><input id="f_email" type="email" placeholder="name@example.com"></div>
+      <div class="field"><label>الجامعة / المعهد</label><input id="f_uni" type="text" placeholder="مثال: جامعة القاهرة"></div>
+      <div class="field"><label>الكلية / التخصص</label><input id="f_major" type="text" placeholder="مثال: هندسة حاسبات"></div>
+      <div class="field full"><label>الفرقة الدراسية / السنة</label><input id="f_year" type="text" placeholder="مثال: الفرقة الثالثة"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="card-title"><span class="num">2</span> بيانات التدريب داخل الشركة</p>
+    <p class="section-sub">تفاصيل الفترة والقسم المسؤول عن المتدرب</p>
+
+    <div class="grid">
+      <div class="field"><label>القسم / الإدارة</label><input id="f_dept" type="text" placeholder="مثال: تكنولوجيا المعلومات"></div>
+      <div class="field"><label>اسم المشرف المسؤول</label><input id="f_sup" type="text" placeholder="مثال: م. سارة حسن"></div>
+      <div class="field"><label>تاريخ بداية التدريب</label><input id="f_start" type="date"></div>
+      <div class="field"><label>تاريخ نهاية التدريب</label><input id="f_end" type="date"></div>
+      <div class="field full"><label>ملاحظات</label><textarea id="f_notes" placeholder="أي بيانات إضافية..."></textarea></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-ghost" type="button" onclick="clearForm()">مسح الحقول</button>
+      <button class="btn btn-primary" type="button" id="submitBtn" onclick="submitRecord()">إضافة إلى السجل</button>
+    </div>
+    <div id="formMsg" class="msg"></div>
+  </div>
+
+  <div class="card print-card">
+    <div class="report-head">
+      <p class="card-title" style="margin:0;"><span class="num">3</span> تقرير البيانات المسجلة</p>
+      <span class="stat-pill" id="countPill">0 سجل</span>
+    </div>
+    <div class="search-row">
+      <input id="searchBox" type="text" placeholder="ابحث بالاسم أو القسم أو الجامعة..." oninput="renderTable()">
+      <button class="btn btn-ghost btn-small" type="button" onclick="exportCSV()">تصدير CSV لجوجل شيت</button>
+      <button class="btn btn-ghost btn-small" type="button" onclick="window.print()">طباعة / PDF</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>رقم القيد</th><th>الاسم</th><th>الرقم القومي</th><th>الهاتف</th>
+            <th>البريد الإلكتروني</th><th>الجامعة</th><th>التخصص</th>
+            <th>القسم</th><th>المشرف</th><th>بداية التدريب</th><th>نهاية التدريب</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <p class="note">البيانات هنا مشتركة بين كل من يفتح هذا النموذج (تُحفظ تلقائيًا). استخدم «تصدير CSV» لرفعها مباشرة على جوجل شيت من: ملف ← استيراد، أو «طباعة / PDF» لتقرير رسمي.</p>
+  </div>
+
+</div>
+
+<script>
+let records = [];
+let editingId = null;
+
+async function loadAll(){
+  try{
+    const org = await window.storage.get('org-settings', true);
+    if(org && org.value){
+      const s = JSON.parse(org.value);
+      document.getElementById('s_orgName').value = s.name || '';
+      document.getElementById('s_orgPhone').value = s.phone || '';
+      document.getElementById('s_orgAddress').value = s.address || '';
+      if(s.logo){
+        setLogoImage(s.logo);
+      }
+      updateOrgLine(s);
+    }
+  }catch(e){}
+
+  try{
+    const res = await window.storage.get('trainee-records', true);
+    records = res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){
+    records = [];
+  }
+  renderTable();
+}
+
+function updateOrgLine(s){
+  const parts = [];
+  if(s.name) parts.push(s.name);
+  if(s.address) parts.push(s.address);
+  if(s.phone) parts.push(s.phone);
+  document.getElementById('orgLine').textContent = parts.join(' · ');
+}
+
+function setLogoImage(dataUrl){
+  document.getElementById('logoPlaceholderHeader').style.display = 'none';
+  document.getElementById('logoBoxHeader').innerHTML = `<img src="${dataUrl}"><input type="file" id="logoInputHeader" accept="image/*">`;
+  document.getElementById('logoInputHeader').addEventListener('change', handleLogoUpload);
+
+  document.getElementById('logoPlaceholderSettings').style.display = 'none';
+  document.getElementById('logoBoxSettings').innerHTML = `<img src="${dataUrl}"><input type="file" id="logoInputSettings" accept="image/*">`;
+  document.getElementById('logoInputSettings').addEventListener('change', handleLogoUpload);
+}
+
+function handleLogoUpload(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => setLogoImage(reader.result);
+  reader.readAsDataURL(file);
+}
+document.getElementById('logoInputHeader').addEventListener('change', handleLogoUpload);
+document.getElementById('logoInputSettings').addEventListener('change', handleLogoUpload);
+
+function toggleSettings(){
+  document.getElementById('settingsPanel').classList.toggle('open');
+}
+
+async function saveOrgSettings(){
+  const imgEl = document.querySelector('#logoBoxSettings img');
+  const settings = {
+    name: document.getElementById('s_orgName').value.trim(),
+    phone: document.getElementById('s_orgPhone').value.trim(),
+    address: document.getElementById('s_orgAddress').value.trim(),
+    logo: imgEl ? imgEl.getAttribute('src') : null
+  };
+  const msg = document.getElementById('orgMsg');
+  try{
+    const result = await window.storage.set('org-settings', JSON.stringify(settings), true);
+    if(!result){ msg.textContent = 'تعذر الحفظ، حاول مرة أخرى.'; msg.className='msg err'; return; }
+    updateOrgLine(settings);
+    msg.textContent = 'تم حفظ بيانات الشركة.';
+    msg.className = 'msg ok';
+  }catch(e){
+    msg.textContent = 'تعذر الحفظ، حاول مرة أخرى.';
+    msg.className = 'msg err';
+  }
+}
+
+function clearForm(){
+  ['f_name','f_nid','f_dob','f_phone','f_email','f_uni','f_major','f_year','f_dept','f_sup','f_start','f_end','f_notes']
+    .forEach(id => document.getElementById(id).value = '');
+  document.getElementById('formMsg').textContent = '';
+}
+
+function cancelEdit(){
+  editingId = null;
+  document.getElementById('editBanner').classList.remove('show');
+  document.getElementById('submitBtn').textContent = 'إضافة إلى السجل';
+  clearForm();
+}
+
+function startEdit(id){
+  const r = records.find(x => x.id === id);
+  if(!r) return;
+  editingId = id;
+  document.getElementById('f_name').value = r.name || '';
+  document.getElementById('f_nid').value = r.nid || '';
+  document.getElementById('f_dob').value = r.dob || '';
+  document.getElementById('f_phone').value = r.phone || '';
+  document.getElementById('f_email').value = r.email || '';
+  document.getElementById('f_uni').value = r.uni || '';
+  document.getElementById('f_major').value = r.major || '';
+  document.getElementById('f_year').value = r.year || '';
+  document.getElementById('f_dept').value = r.dept || '';
+  document.getElementById('f_sup').value = r.sup || '';
+  document.getElementById('f_start').value = r.start || '';
+  document.getElementById('f_end').value = r.end || '';
+  document.getElementById('f_notes').value = r.notes || '';
+  document.getElementById('editBanner').classList.add('show');
+  document.getElementById('submitBtn').textContent = 'حفظ التعديلات';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+async function submitRecord(){
+  const name = document.getElementById('f_name').value.trim();
+  const nid = document.getElementById('f_nid').value.trim();
+  const phone = document.getElementById('f_phone').value.trim();
+  const msg = document.getElementById('formMsg');
+
+  if(!name || !nid || !phone){
+    msg.textContent = 'برجاء تعبئة الاسم والرقم القومي ورقم الهاتف على الأقل.';
+    msg.className = 'msg err';
+    return;
+  }
+
+  const data = {
+    name, nid,
+    dob: document.getElementById('f_dob').value,
+    phone,
+    email: document.getElementById('f_email').value.trim(),
+    uni: document.getElementById('f_uni').value.trim(),
+    major: document.getElementById('f_major').value.trim(),
+    year: document.getElementById('f_year').value.trim(),
+    dept: document.getElementById('f_dept').value.trim(),
+    sup: document.getElementById('f_sup').value.trim(),
+    start: document.getElementById('f_start').value,
+    end: document.getElementById('f_end').value,
+    notes: document.getElementById('f_notes').value.trim()
+  };
+
+  let snapshot = records.slice();
+
+  if(editingId){
+    const idx = records.findIndex(r => r.id === editingId);
+    if(idx !== -1){
+      records[idx] = Object.assign({}, records[idx], data);
+    }
+  } else {
+    records.push(Object.assign({
+      id: Date.now().toString(),
+      seq: records.length + 1,
+      submittedAt: new Date().toISOString()
+    }, data));
+  }
+
+  try{
+    const result = await window.storage.set('trainee-records', JSON.stringify(records), true);
+    if(!result){
+      msg.textContent = 'حدث خطأ أثناء الحفظ، برجاء المحاولة مرة أخرى.';
+      msg.className = 'msg err';
+      records = snapshot;
+      return;
+    }
+    msg.textContent = editingId ? 'تم حفظ التعديلات بنجاح.' : 'تم إضافة البيانات إلى السجل بنجاح.';
+    msg.className = 'msg ok';
+    cancelEdit();
+    renderTable();
+  }catch(e){
+    msg.textContent = 'حدث خطأ أثناء الحفظ، برجاء المحاولة مرة أخرى.';
+    msg.className = 'msg err';
+    records = snapshot;
+  }
+}
+
+async function deleteRecord(id){
+  const snapshot = records.slice();
+  const idx = records.findIndex(r => r.id === id);
+  if(idx === -1) return;
+  records.splice(idx,1);
+  try{
+    await window.storage.set('trainee-records', JSON.stringify(records), true);
+    if(editingId === id) cancelEdit();
+    renderTable();
+  }catch(e){
+    records = snapshot;
+  }
+}
+
+function regNumber(r, position){
+  const year = r.submittedAt ? new Date(r.submittedAt).getFullYear() : new Date().getFullYear();
+  return 'TR-' + year + '-' + String(position).padStart(4,'0');
+}
+
+function renderTable(){
+  const q = document.getElementById('searchBox').value.trim().toLowerCase();
+  const filtered = records.filter(r=>{
+    if(!q) return true;
+    return (r.name||'').toLowerCase().includes(q)
+      || (r.dept||'').toLowerCase().includes(q)
+      || (r.uni||'').toLowerCase().includes(q);
+  });
+
+  document.getElementById('countPill').textContent = records.length + ' سجل';
+  const body = document.getElementById('tableBody');
+
+  if(filtered.length === 0){
+    body.innerHTML = `<tr><td colspan="12"><div class="empty-state">لا توجد بيانات مسجلة بعد. ابدأ بإضافة أول متدرب من النموذج أعلاه.</div></td></tr>`;
+    return;
+  }
+
+  body.innerHTML = filtered.map((r)=>{
+    const position = records.findIndex(x => x.id === r.id) + 1;
+    return `
+    <tr>
+      <td><span class="seq-badge">${regNumber(r, position)}</span></td>
+      <td>${escapeHtml(r.name)}</td>
+      <td>${escapeHtml(r.nid)}</td>
+      <td>${escapeHtml(r.phone)}</td>
+      <td>${escapeHtml(r.email)}</td>
+      <td>${escapeHtml(r.uni)}</td>
+      <td>${escapeHtml(r.major)}</td>
+      <td>${escapeHtml(r.dept)}</td>
+      <td>${escapeHtml(r.sup)}</td>
+      <td>${escapeHtml(r.start)}</td>
+      <td>${escapeHtml(r.end)}</td>
+      <td>
+        <div class="row-actions">
+          <button class="icon-btn edit" onclick="startEdit('${r.id}')">تعديل</button>
+          <button class="icon-btn del" onclick="deleteRecord('${r.id}')">حذف</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function escapeHtml(str){
+  if(!str) return '';
+  return str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function exportCSV(){
+  const headers = ['رقم القيد','الاسم','الرقم القومي','تاريخ الميلاد','الهاتف','البريد الإلكتروني','الجامعة','التخصص','الفرقة','القسم','المشرف','بداية التدريب','نهاية التدريب','ملاحظات'];
+  const rows = records.map((r,i) => [regNumber(r,i+1),r.name,r.nid,r.dob,r.phone,r.email,r.uni,r.major,r.year,r.dept,r.sup,r.start,r.end,r.notes]);
+  let csv = '\uFEFF' + headers.join(',') + '\n';
+  rows.forEach(row=>{
+    csv += row.map(v => `"${(v||'').toString().replace(/"/g,'""')}"`).join(',') + '\n';
+  });
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'بيانات_المتدربين.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+loadAll();
+</script>
+</body>
+</html>
